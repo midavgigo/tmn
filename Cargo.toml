@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Operator 415D"]
+description = "Instrument for working with complex numbers and quaternions"
 
 [profile.dev]
 opt-level = 0
