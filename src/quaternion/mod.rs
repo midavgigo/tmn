@@ -60,23 +60,134 @@ impl QNum {
     /// assert_eq!((1_f32, 1_f32, 1_f32, 1_f32), c.get());
     /// ```
     pub fn clone(&self) -> QNum{QNum{r:self.r,i:self.i,j:self.j,k:self.k } }
+    ///The method for obtaining quaternion coefficients in the form of a tuple
     ///
+    /// Метод для получения коэффициентов кватерниона в виде кортежа
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::quaternion::QNum;
+    /// let c = QNum::make_from_r(1_f32, 2_f32, 3_f32, 4_f32);
+    /// assert_eq!((1_f32, 2_f32, 3_f32, 4_f32), c.get());
+    /// ```
     pub fn get(&self) -> (f32, f32, f32, f32){ (self.r, self.i, self.j, self.k) }
+    ///The Method that returns the conjugate quaternion
+    ///
+    ///Метод, возвращающий сопряженный кватернион
+    ///
+    /// # Example
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(1_f32, 1_f32, 1_f32, 1_f32);
+    /// a = a.conj();
+    /// assert_eq!((1_f32, -1_f32, -1_f32, -1_f32), a.get());
+    /// ```
     pub fn conj(&self) -> QNum{QNum{r:self.r, i:-self.i, j:-self.j, k:-self.k}}
+    ///The method that returns the quaternion norm
+    ///
+    /// Метод, возвращающий норму кватерниона
+    ///
+    /// # Example
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let a = QNum::make_from_r(1_f32, 1_f32, 1_f32, 1_f32);
+    /// assert_eq!(4_f32, a.norm());
+    ///
+    /// ```
     pub fn norm(&self) -> f32{self.mult_q(self.conj()).r}
+    ///The method that returns the quaternion module
+    ///
+    /// Метод, возвращающий модуль кватерниона
+    ///
+    /// # Example
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let a = QNum::make_from_r(1_f32, 1_f32, 1_f32, 1_f32);
+    /// assert_eq!(2_f32, a.modl());
+    ///
+    /// ```
     pub fn modl(&self) -> f32{self.norm().powf(0.5)}
+    /// The method that returns the sum of a quaternion and a real number
+    ///
+    /// Метод, возвращающий сумму кватерниона и действительного числа
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(4_f32, 10_f32, 10_f32, 10_f32);
+    /// a = a.add_r(6_f32);
+    /// assert_eq!((10_f32, 10_f32, 10_f32, 10_f32), a.get());
+    /// ```
     pub fn add_r(&self, v:f32) -> QNum{QNum {r:self.r+v, i:self.i, j:self.j, k:self.k} }
+    /// The method that returns the sum of a quaternion and a complex number
+    ///
+    /// Метод, возвращающий сумму кватерниона и комплексного числа
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::complex::CNum;
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(4_f32, 4_f32, 10_f32, 10_f32);
+    /// a = a.add_c(CNum::make(6_f32, 6_f32));
+    /// assert_eq!((10_f32, 10_f32, 10_f32, 10_f32), a.get());
+    /// ```
     pub fn add_c(&self, v:CNum) -> QNum{
         let (r, i) = v.get();
         QNum {r:self.r+r, i:self.i+i, j:self.j, k:self.k}
     }
+    /// The method that returns the sum of quaternions
+    ///
+    /// Метод, возвращающий сумму кватернионов
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(4_f32, 4_f32, 4_f32, 4_f32);
+    /// a = a.add_q(QNum::make_from_r(6_f32, 6_f32, 6_f32, 6_f32));
+    /// assert_eq!((10_f32, 10_f32, 10_f32, 10_f32), a.get());
+    /// ```
     pub fn add_q(&self, v:QNum) -> QNum{ QNum {r:self.r+v.r, i:self.i+v.i, j:self.j+v.j, k:self.k+v.k} }
+    /// The method that returns the product of a quaternion and a real number
+    ///
+    /// Метод, возвращающий произведение кватерниона и действительного числа
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(1_f32, 1_f32, 1_f32, 1_f32);
+    /// a = a.mult_r(10_f32);
+    /// assert_eq!((10_f32, 10_f32, 10_f32, 10_f32), a.get());
+    /// ```
     pub fn mult_r(&self, v:f32) -> QNum{ QNum {r:self.r*v, i:self.i*v, j:self.j*v, k:self.k*v}}
+
+    /// The method that returns the product of a quaternion and a complex number
+    ///
+    /// Метод, возвращающий произведение кватерниона и комплексного числа
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::complex::CNum;
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(4_f32, 4_f32, 10_f32, 10_f32);
+    /// a = a.mult_c(CNum::make(6_f32, 6_f32));
+    /// assert_eq!((0_f32, 48_f32, 120_f32, 0_f32), a.get());
+    /// ```
     pub fn mult_c(&self, v:CNum) -> QNum{
         let (r, i) = v.get();
         let (r1, i1, j1, k1) = self.get();
         QNum {r:r1*r-i1*i, i:i1*r+r1*i, j:j1*r+k1*i, k:k1*r-j1*i}
     }
+    /// The method that returns the product of quaternions
+    ///
+    /// Метод, возвращающий произведение кватернионов
+    ///
+    /// # Example
+    /// ```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(4_f32, 4_f32, 4_f32, 4_f32);
+    /// a = a.mult_q(QNum::make_from_r(6_f32, 6_f32, 6_f32, 6_f32));
+    /// assert_eq!((-48_f32, 48_f32, 48_f32, 48_f32), a.get());
+    /// ```
     pub fn mult_q(&self, v:QNum) -> QNum{
         let (x1, y1, u1, v1) = self.get();
         let (x2, y2, u2, v2) = v.get();
@@ -86,8 +197,14 @@ impl QNum {
             j:x1 * u2 - y1 * v2 + u1 * x2 + v1 * y2,
             k:x1 * v2 + y1 * u2 - u1 * y2 + v1 * x2}
     }
-    pub fn div_r(&self, v:f32) ->QNum{QNum{r:self.r/v, i:self.i/v, j:self.j/v, k:self.k/v}}
-    pub fn inv(&self) -> QNum{
-        self.conj().div_r(self.norm())
-    }
+    ///The method that returns the inverse quaternion
+    ///
+    /// Метод, возвращающий обратный кватернион
+    ///
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_from_r(1_f32, 1_f32, 1_f32, 1_f32);
+    /// a = a.inv();
+    /// assert_eq!((0.25_f32, -0.25_f32, -0.25_f32, -0.25_f32), a.get());
+    pub fn inv(&self) -> QNum{ self.conj().mult_r(1_f32/self.norm()) }
 }

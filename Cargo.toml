@@ -3,6 +3,7 @@ name = "tmn"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+authors = ["Operator 415D"]
 
 [profile.dev]
 opt-level = 0
