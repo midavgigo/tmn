@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["QNum","The structure storing the quaternion"]]};
