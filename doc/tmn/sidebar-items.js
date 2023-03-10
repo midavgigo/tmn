@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Nums","Enum for convenient work with different types of numbers"]],"mod":[["complex","Complex Numbers"],["quaternion","Quaternions"]]};
