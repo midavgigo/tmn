@@ -3,6 +3,7 @@
 //! Library for working with complex numbers and quaternions
 //!
 //! Библиотека для работы с комплексными числами и кватернионами
+use std::ops::{Add, Mul};
 use crate::complex::CNum;
 use crate::quaternion::QNum;
 
@@ -19,99 +20,6 @@ pub enum Nums{
 }
 
 impl Nums{
-    //В планах перевести методы на операторы
-    ///The method returns the sum of two Nums elements
-    ///
-    /// Метод возвращает сумму двух элементов Nums
-    ///
-    /// # Examples
-    ///```
-    /// use tmn::Nums;
-    /// use tmn::complex::CNum;
-    /// use tmn::quaternion::QNum;
-    ///
-    /// let a = Nums::Quaternion(QNum::make_from_r(0_f32, 0_f32, 1_f32, 1_f32));
-    /// let b = Nums::Complex(CNum::make(1_f32, 1_f32));
-    ///
-    /// let c = a.add(b);
-    /// match c{
-    ///    Nums::Quaternion(qnum)=>{
-    ///        assert_eq!((1_f32, 1_f32, 1_f32, 1_f32), qnum.get())
-    ///    },
-    ///    _=>panic!("WrongType of Nums")
-    /// }
-    /// ```
-    pub fn add(&self, v:Nums) -> Self{
-        match self {
-            Nums::Real(re)=>{
-                match v {
-                    Nums::Real(re1)=>Nums::Real(re + re1),
-                    Nums::Complex(cnum) => Nums::Complex(cnum.add_r(*re)),
-                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.add_r(*re))
-                }
-            }
-            Nums::Complex(cnum) =>{
-                match v {
-                    Nums::Real(re)=> Nums::Complex(cnum.add_r(re)),
-                    Nums::Complex(cnum1) => Nums::Complex(cnum.add_c(cnum1)),
-                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.add_c(cnum.clone()))
-                }
-            },
-            Nums::Quaternion(qnum)=>{
-                match v {
-                    Nums::Real(re)=> Nums::Quaternion(qnum.add_r(re)),
-                    Nums::Complex(cnum) => Nums::Quaternion(qnum.add_c(cnum)),
-                    Nums::Quaternion(qnum1)=> Nums::Quaternion(qnum.add_q(qnum1))
-                }
-            }
-        }
-    }
-    ///The method returns the product of two Nums elements
-    ///
-    /// Метод возвращает произведение двух элементов Nums
-    ///
-    /// # Examples
-    ///```
-    /// use tmn::Nums;
-    /// use tmn::complex::CNum;
-    /// use tmn::quaternion::QNum;
-    ///
-    /// let a = Nums::Quaternion(QNum::make_from_r(0_f32, 4_f32, 7_f32, 1_f32));
-    /// let b = Nums::Complex(CNum::make(43_f32, 2_f32));
-    ///
-    /// let c = a.mult(b);
-    /// match c{
-    ///    Nums::Quaternion(qnum)=>{
-    ///        assert_eq!((-8_f32, 172_f32, 303_f32, 29_f32), qnum.get())
-    ///    },
-    ///    _=>panic!("WrongType of Nums")
-    /// }
-    /// ```
-    pub fn mult(&self, v:Nums)->Self{
-        match self {
-            Nums::Real(re)=>{
-                match v {
-                    Nums::Real(re1)=>Nums::Real(re * re1),
-                    Nums::Complex(cnum) => Nums::Complex(cnum.mult_r(*re)),
-                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.mult_r(*re))
-                }
-            }
-            Nums::Complex(cnum) =>{
-                match v {
-                    Nums::Real(re)=> Nums::Complex(cnum.mult_r(re)),
-                    Nums::Complex(cnum1) => Nums::Complex(cnum.mult_c(cnum1)),
-                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.mult_c(cnum.clone()))
-                }
-            },
-            Nums::Quaternion(qnum)=>{
-                match v {
-                    Nums::Real(re)=> Nums::Quaternion(qnum.mult_r(re)),
-                    Nums::Complex(cnum) => Nums::Quaternion(qnum.mult_c(cnum)),
-                    Nums::Quaternion(qnum1)=> Nums::Quaternion(qnum.mult_q(qnum1))
-                }
-            }
-        }
-    }
     ///The method for obtaining the conjugate number
     ///
     ///Метод для получения сопряженного числа
@@ -189,6 +97,123 @@ impl Nums{
                 assert!(!o.0.is_nan());
                 let q = QNum::make_from_a(ang*std::f32::consts::PI/180_f32, o);
                 Nums::Quaternion(q.mult_q(qnum.clone()).mult_q(q.conj()))
+            }
+        }
+    }
+}
+
+impl PartialEq for Nums{
+    fn eq(&self, other: &Self) -> bool {
+        match self{
+            Nums::Real(re)=>{
+                match other {
+                    Nums::Real(re1) => re1==re,
+                    _=>false
+                }
+            },
+            Nums::Complex(cnum)=>{
+                match other{
+                    Nums::Complex(cnum1)=>cnum==cnum1,
+                    _=>false
+                }
+            },
+            Nums::Quaternion(qnum)=>{
+                match other {
+                    Nums::Quaternion(qnum1)=>qnum==qnum1,
+                    _=>false
+                }
+            }
+        }
+    }
+}
+
+impl Add for Nums{
+    type Output = Nums;
+    ///
+    /// The method returns the sum of two Nums elements
+    ///
+    /// Метод возвращает сумму двух элементов Nums
+    ///
+    /// # Examples
+    ///```
+    /// use tmn::Nums;
+    /// use tmn::complex::CNum;
+    /// use tmn::quaternion::QNum;
+    ///
+    /// let a = Nums::Quaternion(QNum::make_from_r(0_f32, 0_f32, 1_f32, 1_f32));
+    /// let b = Nums::Complex(CNum::make(1_f32, 1_f32));
+    ///
+    /// let c = a+b;
+    /// assert!(Nums::Quaternion(QNum::make_from_r(1_f32,1_f32,1_f32,1_f32))==c);
+    /// ```
+    fn add(self, rhs: Self) -> Self::Output{
+        match self {
+            Nums::Real(re)=>{
+                match rhs {
+                    Nums::Real(re1)=>Nums::Real(re + re1),
+                    Nums::Complex(cnum) => Nums::Complex(cnum.add_r(re)),
+                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.add_r(re))
+                }
+            }
+            Nums::Complex(cnum) =>{
+                match rhs {
+                    Nums::Real(re)=> Nums::Complex(cnum.add_r(re)),
+                    Nums::Complex(cnum1) => Nums::Complex(cnum.add_c(cnum1)),
+                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.add_c(cnum.clone()))
+                }
+            },
+            Nums::Quaternion(qnum)=>{
+                match rhs {
+                    Nums::Real(re)=> Nums::Quaternion(qnum.add_r(re)),
+                    Nums::Complex(cnum) => Nums::Quaternion(qnum.add_c(cnum)),
+                    Nums::Quaternion(qnum1)=> Nums::Quaternion(qnum.add_q(qnum1))
+                }
+            }
+        }
+    }
+}
+
+impl Mul for Nums{
+    type Output = Self;
+
+    ///The method returns the product of two Nums elements
+    ///
+    /// Метод возвращает произведение двух элементов Nums
+    ///
+    /// # Examples
+    ///```
+    /// use tmn::Nums;
+    /// use tmn::complex::CNum;
+    /// use tmn::quaternion::QNum;
+    ///
+    /// let a = Nums::Quaternion(QNum::make_from_r(0_f32, 4_f32, 7_f32, 1_f32));
+    /// let b = Nums::Complex(CNum::make(43_f32, 2_f32));
+    ///
+    /// let c = a*b;
+    /// assert!(Nums::Quaternion(QNum::make_from_r(-8_f32, 172_f32, 303_f32, 29_f32))==c);
+    /// ```
+    fn mul(self, rhs: Self) -> Self::Output {
+        match self {
+            Nums::Real(re)=>{
+                match rhs {
+                    Nums::Real(re1)=>Nums::Real(re * re1),
+                    Nums::Complex(cnum) => Nums::Complex(cnum.mult_r(re)),
+                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.mult_r(re))
+                }
+            }
+            Nums::Complex(cnum) =>{
+                match rhs {
+                    Nums::Real(re)=> Nums::Complex(cnum.mult_r(re)),
+                    Nums::Complex(cnum1) => Nums::Complex(cnum.mult_c(cnum1)),
+                    Nums::Quaternion(qnum)=> Nums::Quaternion(qnum.mult_c(cnum.clone()))
+                }
+            },
+            Nums::Quaternion(qnum)=>{
+                match rhs {
+                    Nums::Real(re)=> Nums::Quaternion(qnum.mult_r(re)),
+                    Nums::Complex(cnum) => Nums::Quaternion(qnum.mult_c(cnum)),
+                    Nums::Quaternion(qnum1)=> Nums::Quaternion(qnum.mult_q(qnum1))
+                }
             }
         }
     }

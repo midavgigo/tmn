@@ -1,5 +1,6 @@
 //!Complex Numbers
 
+
 ///Structure for storing complex numbers
 ///
 /// Структура для хранения комплексных чисел
@@ -171,5 +172,11 @@ impl CNum {
             r: self.modl().powf(v)*(v * self.i.atan2(self.r)).cos(),
             i: self.modl().powf(v)*(v * self.i.atan2(self.r)).sin()
         }
+    }
+}
+
+impl PartialEq for CNum{
+    fn eq(&self, other: &Self) -> bool {
+        self.get()==other.get()
     }
 }

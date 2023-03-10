@@ -208,3 +208,9 @@ impl QNum {
     /// assert_eq!((0.25_f32, -0.25_f32, -0.25_f32, -0.25_f32), a.get());
     pub fn inv(&self) -> QNum{ self.conj().mult_r(1_f32/self.norm()) }
 }
+
+impl PartialEq for QNum{
+    fn eq(&self, other: &Self) -> bool {
+        self.get() == other.get()
+    }
+}
