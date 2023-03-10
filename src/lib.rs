@@ -3,12 +3,13 @@
 //! Library for working with complex numbers and quaternions
 //!
 //! Библиотека для работы с комплексными числами и кватернионами
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Neg};
 use crate::complex::CNum;
 use crate::quaternion::QNum;
 
 pub mod complex;
 pub mod quaternion;
+pub mod cassette;
 
 ///Enum for convenient work with different types of numbers
 ///
@@ -98,6 +99,25 @@ impl Nums{
                 let q = QNum::make_from_a(ang*std::f32::consts::PI/180_f32, o);
                 Nums::Quaternion(q.mult_q(qnum.clone()).mult_q(q.conj()))
             }
+        }
+    }
+    ///The method for setting values to specific coefficients
+    ///
+    /// Метод для установки значений в конкретные коэффициенты
+    ///
+    /// # Example
+    ///```
+    /// use tmn::{Nums, complex};
+    /// use tmn::complex::CNum;
+    /// let mut a = Nums::Complex(CNum::make_zero());
+    /// a = a.set(complex::R|complex::I, 3_f32);
+    /// assert!(Nums::Complex(CNum::make(3_f32, 3_f32))==a);
+    /// ```
+    pub fn set(&self, c:u8, v:f32)->Self{
+        match self {
+            Nums::Real(re)=>Nums::Real(*re),
+            Nums::Complex(cnum)=>Nums::Complex(cnum.set(c, v)),
+            Nums::Quaternion(qnum)=>Nums::Quaternion(qnum.set(c, v))
         }
     }
 }
@@ -216,5 +236,23 @@ impl Mul for Nums{
                 }
             }
         }
+    }
+}
+
+impl Neg for Nums {
+    type Output = Self;
+    ///Redefined negative operator
+    ///
+    ///Переопределенный оператор отрицательного значения
+    ///
+    /// # Example
+    ///```
+    /// use tmn::Nums;
+    /// use tmn::quaternion::QNum;
+    /// let qnum = Nums::Quaternion(-QNum::make_from_r(3_f32, 4_f32, 1_f32, 2_f32));
+    /// assert!(qnum== Nums::Quaternion(QNum::make_from_r(-3_f32, -4_f32, -1_f32, -2_f32)));
+    /// ```
+    fn neg(self) -> Self::Output {
+        self.mul(Nums::Real(-1_f32))
     }
 }

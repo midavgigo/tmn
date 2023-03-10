@@ -1,12 +1,37 @@
 //!Quaternions
+use std::ops::Neg;
+use crate::cassette;
 use crate::complex::CNum;
-
 ///The structure storing the quaternion
 ///
 /// Структура хранящая кватернион
 pub struct QNum{r:f32, i:f32, j:f32, k:f32 }
+pub const R:u8 = 1;
+pub const I:u8 = 2;
+pub const J:u8 = 4;
+pub const K:u8 = 8;
 
 impl QNum {
+    ///The function for creating a quaternion with zero coefficients
+    ///
+    ///Функция для создания кватернионов с нулевыми коэффициентами
+    ///
+    /// # Example
+    ///
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let a = QNum::make_zero();
+    /// assert!(QNum::make_from_r(0_f32, 0_f32, 0_f32, 0_f32)==a);
+    /// ```
+
+    pub fn make_zero()->Self{
+        QNum{
+            r:0_f32,
+            i:0_f32,
+            j:0_f32,
+            k:0_f32
+        }
+    }
     ///The function that creates a quaternion from real coefficients
     ///
     ///Функция, создающая кватернион из действительных коэффициентов
@@ -207,10 +232,55 @@ impl QNum {
     /// a = a.inv();
     /// assert_eq!((0.25_f32, -0.25_f32, -0.25_f32, -0.25_f32), a.get());
     pub fn inv(&self) -> QNum{ self.conj().mult_r(1_f32/self.norm()) }
+    ///The method for setting values to specific coefficients
+    ///
+    /// Метод для установки значений в конкретные коэффициенты
+    ///
+    /// # Example
+    ///```
+    /// use tmn::quaternion;
+    /// use tmn::quaternion::QNum;
+    /// let mut a = QNum::make_zero();
+    /// a = a.set(quaternion::R|quaternion::J, 3_f32);
+    /// assert_eq!((3_f32, 0_f32, 3_f32, 0_f32), a.get());
+    /// ```
+
+    pub fn set(&self, c:u8, v:f32) -> Self{
+        let mut ret = self.clone();
+        if cassette::cassette::eq(c, 0){
+            ret.r = v;
+        }
+        if cassette::cassette::eq(c, 1){
+            ret.i = v;
+        }
+        if cassette::cassette::eq(c, 2){
+            ret.j = v;
+        }
+        if cassette::cassette::eq(c, 3){
+            ret.k = v;
+        }
+        ret
+    }
 }
 
 impl PartialEq for QNum{
     fn eq(&self, other: &Self) -> bool {
         self.get() == other.get()
+    }
+}
+impl Neg for QNum {
+    type Output = Self;
+    ///Redefined negative operator
+    ///
+    ///Переопределенный оператор отрицательного значения
+    ///
+    /// # Example
+    ///```
+    /// use tmn::quaternion::QNum;
+    /// let cnum = -QNum::make_from_r(3_f32, 4_f32, 1_f32, 2_f32);
+    /// assert_eq!(cnum.get(), (-3_f32, -4_f32, -1_f32, -2_f32));
+    /// ```
+    fn neg(self) -> Self::Output {
+        self.mult_r(-1_f32)
     }
 }
