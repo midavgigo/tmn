@@ -120,6 +120,25 @@ impl Nums{
             Nums::Quaternion(qnum)=>Nums::Quaternion(qnum.set(c, v))
         }
     }
+    ///The method for cloning the Nums element
+    ///
+    ///Метод для клонирования элемента Nums
+    ///
+    /// # Example
+    ///```
+    /// use tmn::Nums;
+    /// use tmn::quaternion::QNum;
+    /// let a = Nums::Quaternion(QNum::make_zero());
+    /// let b = a.clone();
+    /// assert!(a==b);
+    /// ```
+    pub fn clone(&self)->Self{
+        match self {
+            Nums::Real(re) => Nums::Real(*re),
+            Nums::Complex(cnum)=> Nums::Complex(cnum.clone()),
+            Nums::Quaternion(qnum) => Nums::Quaternion(qnum.clone())
+        }
+    }
 }
 
 impl PartialEq for Nums{
